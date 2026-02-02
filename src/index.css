@@ -554,6 +554,36 @@ img[loading="eager"] {
    TACTICAL UI COMPONENTS
    ======================================== */
 
+/* Radar sweep animation */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar-sweep {
+  animation: radarSweep 8s linear infinite;
+}
+
+/* Scanning line animation */
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(500%); }
+}
+
+.animate-scan-line {
+  animation: scanLine 4s linear infinite;
+}
+
+/* Border rotate animation */
+@keyframes borderRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-border-rotate {
+  animation: borderRotate 8s linear infinite;
+}
+
 /* Tactical Card */
 .tactical-card {
   background: linear-gradient(135deg, rgba(14, 17, 26, 0.95) 0%, rgba(20, 24, 36, 0.9) 100%);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useLayoutEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight } from 'lucide-react';
@@ -33,11 +33,11 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
         );
       }
 
-      // Portrait card entrance (desktop only)
-      if (window.innerWidth >= 1024 && portraitRef.current) {
+      // Portrait card entrance (all devices)
+      if (portraitRef.current) {
         tl.fromTo(portraitRef.current,
-          { x: 50, opacity: 0, scale: 0.95 },
-          { x: 0, opacity: 1, scale: 1, duration: 0.8 },
+          { y: 30, opacity: 0, scale: 0.95 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.8 },
           0.3
         );
       }
@@ -48,47 +48,6 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
         { y: 0, opacity: 1, duration: 0.5, stagger: 0.1 },
         0.5
       );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Scroll-driven exit animation
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=120%',
-          pin: true,
-          scrub: 1,
-        }
-      });
-
-      // Headline exits left
-      scrollTl.fromTo(headlineRef.current,
-        { x: 0, opacity: 1 },
-        { x: -100, opacity: 0 },
-        0.6
-      );
-
-      // Portrait exits right (desktop only)
-      if (portraitRef.current) {
-        scrollTl.fromTo(portraitRef.current,
-          { x: 0, opacity: 1 },
-          { x: 100, opacity: 0 },
-          0.6
-        );
-      }
-
-      // Meta and CTA fade down
-      scrollTl.fromTo([metaRef.current, ctaRef.current],
-        { y: 0, opacity: 1 },
-        { y: 30, opacity: 0, stagger: 0.05 },
-        0.65
-      );
-
     }, sectionRef);
 
     return () => ctx.revert();
@@ -105,7 +64,8 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
     <section
       ref={sectionRef}
       id="hero"
-      className={`section-pinned relative w-full h-screen overflow-hidden ${className}`}
+      className={`relative w-full min-h-screen flex items-center overflow-hidden ${className}`}
+      style={{ backgroundColor: '#07080B' }}
     >
       {/* AI-Powered Background with Particle Network */}
       <AIBackground
@@ -118,13 +78,13 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
 
       {/* Additional gradient for text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#07080B]/90 via-[#07080B]/60 to-transparent z-[1]" />
-      <div className="lg:hidden absolute inset-0 bg-[#07080B]/30 z-[1]" />
+      <div className="absolute inset-0 bg-[#07080B]/20 z-[1]" />
 
       {/* Tactical Dashboard Overlay */}
       <DashboardOverlay position="bottom-right" className="hidden lg:block" />
 
       {/* Content Container */}
-      <div className="relative z-10 w-full h-full flex items-center px-4 sm:px-6 md:px-8 lg:px-[6vw] py-16 md:py-20">
+      <div className="relative z-10 w-full min-h-screen flex items-center px-4 sm:px-6 md:px-8 lg:px-[6vw] py-16 md:py-20">
         <div className="w-full max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
             {/* Left: Headline */}
@@ -141,50 +101,35 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
               <p className="text-[14px] sm:text-base md:text-lg lg:text-xl text-[#A6AFBF] max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 LLM Systems · Tactical Comms · Embedded Linux · ATAK/TAK · Security-Cleared
               </p>
-
-              {/* Mobile credentials */}
-              <div className="lg:hidden flex flex-wrap justify-center gap-2 mt-4">
-                <span className="px-3 py-1 rounded-full bg-[#2D6BFF]/20 backdrop-blur-sm text-[#2D6BFF] text-xs font-semibold border border-[#2D6BFF]/30">
-                  15+ Years
-                </span>
-                <span className="px-3 py-1 rounded-full bg-[#0E111A]/60 backdrop-blur-sm text-[#F2F5FA] text-xs font-semibold border border-white/10">
-                  Lead AI @ DoodleLabs
-                </span>
-              </div>
             </div>
 
-            {/* Right: Portrait Card - Smaller size to reduce pixelation */}
+            {/* Right: Portrait Card - Visible on all screen sizes */}
             <div
               ref={portraitRef}
-              className="hidden lg:block relative"
+              className="relative flex justify-center lg:justify-end"
             >
-              <div className="relative w-full max-w-[280px] xl:max-w-[300px] ml-auto aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 group">
+              <div className="relative w-[160px] sm:w-[200px] md:w-[240px] lg:w-[260px] xl:w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 group bg-[#0E111A]">
                 <img
                   src="/hero_portrait.jpg"
                   alt="Jabbir Basha - Principal AI/Full-Stack Engineer"
-                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105 image-render-smooth"
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   loading="eager"
-                  style={{ imageRendering: '-webkit-optimize-contrast' }}
+                  style={{
+                    imageRendering: 'auto',
+                    filter: 'contrast(1.1) saturate(1.15) brightness(1.05)'
+                  }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07080B]/70 via-transparent to-transparent" />
-                
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07080B]/80 via-transparent to-transparent" />
+
                 {/* Overlay badges */}
-                <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full bg-[#2D6BFF]/90 backdrop-blur-sm text-[#07080B] text-xs font-semibold">
-                    15+ Years Experience
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1 sm:gap-2">
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#2D6BFF]/90 backdrop-blur-sm text-[#07080B] text-[10px] sm:text-xs font-semibold">
+                    15+ Years
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-[#0E111A]/80 backdrop-blur-sm text-[#F2F5FA] text-xs font-semibold border border-white/10">
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#0E111A]/80 backdrop-blur-sm text-[#F2F5FA] text-[10px] sm:text-xs font-semibold border border-white/10">
                     Lead AI @ DoodleLabs
                   </span>
                 </div>
-
-                {/* Animated border glow */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(45,107,255,0.3) 0%, transparent 50%, rgba(0,217,255,0.3) 100%)',
-                    padding: '1px'
-                  }}
-                />
               </div>
             </div>
           </div>

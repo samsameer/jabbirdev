@@ -33,16 +33,30 @@
   * {
     @apply border-border;
   }
-  
+
+  /* Critical: Prevent flash of unstyled content/black screen */
   html {
     scroll-behavior: smooth;
+    background-color: #07080B !important;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
-    background-color: #07080B;
+    background-color: #07080B !important;
     overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Root container background */
+  #root {
+    min-height: 100vh;
+    background-color: #07080B !important;
+  }
+
+  /* All sections default background */
+  section {
+    background-color: #07080B;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -517,6 +531,18 @@ img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   filter: blur(0.3px);
+}
+
+/* Optimized portrait image rendering */
+.portrait-image {
+  image-rendering: auto;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Prevent image layout shift */
+img[loading="eager"] {
+  content-visibility: auto;
 }
 
 /* ========================================

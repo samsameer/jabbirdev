@@ -106,20 +106,20 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
             {/* Right: Portrait Card - Visible on all screen sizes */}
             <div
               ref={portraitRef}
-              className="relative flex justify-center lg:justify-end"
+              className="relative flex justify-center lg:justify-end order-first lg:order-last mb-8 lg:mb-0"
             >
-              <div className="relative w-[160px] sm:w-[200px] md:w-[240px] lg:w-[260px] xl:w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 group bg-[#0E111A]">
+              <div className="relative w-[200px] sm:w-[240px] md:w-[280px] lg:w-[260px] xl:w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 group bg-[#0E111A]">
                 <img
                   src="/hero_portrait.jpg"
                   alt="Jabbir Basha - Principal AI/Full-Stack Engineer"
-                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 portrait-image"
                   loading="eager"
                   style={{
                     imageRendering: 'auto',
-                    filter: 'contrast(1.1) saturate(1.15) brightness(1.05)'
+                    filter: 'contrast(1.2) saturate(1.25) brightness(1.1)'
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07080B]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07080B]/70 via-transparent to-transparent" />
 
                 {/* Overlay badges */}
                 <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1 sm:gap-2">

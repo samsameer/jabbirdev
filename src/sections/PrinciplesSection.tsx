@@ -1,60 +1,28 @@
-import { useRef, useLayoutEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef, useEffect } from 'react';
 import { GitBranch, Cpu, Eye } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+// No GSAP/ScrollTrigger - better mobile performance
 
-interface PrinciplesSectionProps {
-  className?: string;
-}
-
-const PrinciplesSection = ({ className = '' }: PrinciplesSectionProps) => {
+const PrinciplesSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      // Header animation
-      gsap.fromTo(headerRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
+  useEffect(() => {
+    // Simple intersection observer for fade-in on scroll (mobile-friendly)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
           }
-        }
-      );
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      // Cards animation
-      const cards = cardsRef.current?.querySelectorAll('.principle-card');
-      if (cards) {
-        gsap.fromTo(cards,
-          { y: 40, opacity: 0, scale: 0.95 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: cardsRef.current,
-              start: 'top 75%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-      }
-    }, sectionRef);
+    const animateElements = sectionRef.current?.querySelectorAll('.animate-on-scroll');
+    animateElements?.forEach((el) => observer.observe(el as Element));
 
-    return () => ctx.revert();
+    return () => observer.disconnect();
   }, []);
 
   const principles = [
@@ -76,43 +44,41 @@ const PrinciplesSection = ({ className = '' }: PrinciplesSectionProps) => {
   ];
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       id="principles"
-      className={`section-flowing bg-[#07080B] py-20 lg:py-32 ${className}`}
+      className="bg-[#07080B] py-16 sm:py-20 lg:py-32"
     >
-      <div className="px-6 lg:px-[6vw]">
+      <div className="px-4 sm:px-6 lg:px-[6vw]">
         {/* Header */}
-        <div ref={headerRef} className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-16">
-          <h2 
-            className="text-[clamp(32px,4vw,56px)] font-bold text-[#F2F5FA]"
+        <div className="animate-on-scroll flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 mb-12 opacity-0 transition-opacity duration-700">
+          <h2
+            className="text-[clamp(26px,4vw,44px)] font-bold text-[#F2F5FA]"
             style={{ fontFamily: 'Space Grotesk, sans-serif' }}
           >
             Principles
           </h2>
-          <p className="text-[#A6AFBF] max-w-md text-lg">
+          <p className="text-[#A6AFBF] max-w-md text-sm">
             I optimize for clarity, reliability, and real-world impact.
           </p>
         </div>
 
         {/* Cards */}
-        <div 
-          ref={cardsRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {principles.map((principle, index) => (
-            <div 
+            <div
               key={index}
-              className="principle-card group"
+              className="animate-on-scroll group opacity-0 transition-opacity duration-700"
+              style={{ transitionDelay: `${(index + 1) * 100}ms` }}
             >
-              <div className="premium-card relative p-5 sm:p-6 lg:p-8 rounded-xl bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 h-full">
+              <div className="relative p-4 sm:p-6 rounded-xl bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 h-full transition-colors">
                 {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-[#2D6BFF]/10 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-[#2D6BFF]/20 transition-colors">
-                  <principle.icon size={22} className="sm:size-26 text-[#2D6BFF]" />
+                <div className="w-12 h-12 rounded-xl bg-[#2D6BFF]/10 flex items-center justify-center mb-4 group-hover:bg-[#2D6BFF]/20 transition-colors">
+                  <principle.icon size={22} className="text-[#2D6BFF]" />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg sm:text-xl font-semibold text-[#F2F5FA] mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-[#F2F5FA] mb-2 sm:mb-3">
                   {principle.title}
                 </h3>
 

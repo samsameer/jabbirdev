@@ -514,6 +514,11 @@
   contain-intrinsic-size: 0 500px;
 }
 
+/* Smooth fade-in animation for scroll-triggered elements */
+.animate-on-scroll.fade-in-visible {
+  opacity: 1 !important;
+}
+
 /* GPU Acceleration for Animations */
 .gpu-accelerated {
   transform: translateZ(0);

@@ -1,60 +1,28 @@
-import { useRef, useLayoutEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef, useEffect } from 'react';
 import { Code2, Database, Cloud, Shield, Smartphone, Radio } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+// No GSAP/ScrollTrigger - better mobile performance
 
-interface TechStackSectionProps {
-  className?: string;
-}
-
-const TechStackSection = ({ className = '' }: TechStackSectionProps) => {
+const TechStackSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      // Header animation
-      gsap.fromTo(headerRef.current,
-        { y: 24, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
+  useEffect(() => {
+    // Simple intersection observer for fade-in on scroll (mobile-friendly)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
           }
-        }
-      );
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      // Cards animation
-      const cards = gridRef.current?.querySelectorAll('.tech-card');
-      if (cards) {
-        gsap.fromTo(cards,
-          { y: '10vh', opacity: 0, scale: 0.98 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: gridRef.current,
-              start: 'top 75%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-      }
-    }, sectionRef);
+    const animateElements = sectionRef.current?.querySelectorAll('.animate-on-scroll');
+    animateElements?.forEach((el) => observer.observe(el as Element));
 
-    return () => ctx.revert();
+    return () => observer.disconnect();
   }, []);
 
   const techCategories = [
@@ -100,50 +68,40 @@ const TechStackSection = ({ className = '' }: TechStackSectionProps) => {
     <section
       ref={sectionRef}
       id="tech-stack"
-      className={`section-flowing bg-[#07080B] py-20 lg:py-32 ${className}`}
+      className="bg-[#07080B] py-16 sm:py-20 lg:py-32"
     >
       <div className="px-4 sm:px-6 lg:px-[6vw]">
         {/* Header */}
-        <div ref={headerRef} className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="animate-on-scroll flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 sm:gap-6 mb-8 sm:mb-12 opacity-0 transition-opacity duration-700">
           <div>
             <h2
-              className="text-[clamp(28px,5vw,48px)] sm:text-[clamp(32px,4vw,56px)] font-bold text-[#F2F5FA] mb-3 sm:mb-4"
+              className="text-[clamp(26px,4vw,44px)] sm:text-[clamp(28px,4vw,48px)] font-bold text-[#F2F5FA] mb-3 sm:mb-4"
               style={{ fontFamily: 'Space Grotesk, sans-serif' }}
             >
               Tech stack
             </h2>
-            <p className="text-[#A6AFBF] max-w-md text-base sm:text-lg">
+            <p className="text-[#A6AFBF] max-w-md text-sm">
               Full-stack expertise from embedded Linux to LLM inference. Production-ready tools for mission-critical systems.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#2D6BFF]/10 text-[#2D6BFF] text-xs sm:text-sm font-medium border border-[#2D6BFF]/20">
-              50+ Technologies
-            </span>
-            <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#0E111A] text-[#A6AFBF] text-xs sm:text-sm font-medium border border-white/5">
-              15+ Years Experience
-            </span>
           </div>
         </div>
 
         {/* Grid */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {techCategories.map((category, index) => (
             <div
               key={index}
-              className="tech-card group"
+              className="animate-on-scroll group opacity-0 transition-opacity duration-700"
+              style={{ transitionDelay: `${(index + 1) * 80}ms` }}
             >
-              <div className="premium-card relative p-5 sm:p-6 rounded-xl bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 h-full">
+              <div className="relative p-4 sm:p-5 rounded-xl bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 h-full transition-colors">
                 {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-[#2D6BFF]/10 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-[#2D6BFF]/20 transition-colors">
-                  <category.icon size={22} className="sm:size-26 text-[#2D6BFF]" />
+                <div className="w-12 h-12 rounded-xl bg-[#2D6BFF]/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-[#2D6BFF]/20 transition-colors">
+                  <category.icon size={22} className="text-[#2D6BFF]" />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg sm:text-xl font-semibold text-[#F2F5FA] mb-2">
+                <h3 className="text-base sm:text-lg font-semibold text-[#F2F5FA] mb-1 sm:mb-2">
                   {category.title}
                 </h3>
 
@@ -157,15 +115,12 @@ const TechStackSection = ({ className = '' }: TechStackSectionProps) => {
                   {category.tech.map((t, i) => (
                     <span
                       key={i}
-                      className="tech-pill px-2 py-1 rounded-md bg-[#07080B]/50 text-[#A6AFBF] text-xs font-mono hover:bg-[#2D6BFF]/10 hover:text-[#2D6BFF] cursor-default"
+                      className="px-2 py-1 rounded-md bg-[#07080B]/50 text-[#A6AFBF] text-xs font-mono"
                     >
                       {t}
                     </span>
                   ))}
                 </div>
-
-                {/* Hover accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#2D6BFF] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-b-xl" />
               </div>
             </div>
           ))}

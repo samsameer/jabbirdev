@@ -1,72 +1,28 @@
 import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+// No GSAP/ScrollTrigger - better mobile performance
 
-interface FeaturedWorkSectionProps {
-  className?: string;
-}
-
-const FeaturedWorkSection = ({ className = '' }: FeaturedWorkSectionProps) => {
+const FeaturedWorkSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const leftCardRef = useRef<HTMLDivElement>(null);
-  const rightCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Smooth header entrance
-      gsap.fromTo(headerRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
+    // Simple intersection observer for fade-in on scroll (mobile-friendly)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
           }
-        }
-      );
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      // Cards slide in from sides
-      gsap.fromTo(leftCardRef.current,
-        { x: -80, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: leftCardRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
+    const animateElements = sectionRef.current?.querySelectorAll('.animate-on-scroll');
+    animateElements?.forEach((el) => observer.observe(el as Element));
 
-      gsap.fromTo(rightCardRef.current,
-        { x: 80, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: rightCardRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-
-    }, sectionRef);
-
-    return () => ctx.revert();
+    return () => observer.disconnect();
   }, []);
 
   const projects = [
@@ -90,43 +46,37 @@ const FeaturedWorkSection = ({ className = '' }: FeaturedWorkSectionProps) => {
     <section
       ref={sectionRef}
       id="featured-work"
-      className={`section-pinned bg-[#07080B] py-20 lg:py-32 ${className}`}
+      className="bg-[#07080B] py-16 sm:py-20 lg:py-32"
     >
       <div className="relative w-full px-4 sm:px-6 lg:px-[6vw]">
         {/* Header */}
-        <div ref={headerRef} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12 sm:mb-16">
+        <div className="animate-on-scroll flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12 opacity-0 transition-opacity duration-700">
           <h2
-            className="text-[clamp(28px,5vw,48px)] sm:text-[clamp(32px,4vw,56px)] font-bold text-[#F2F5FA]"
+            className="text-[clamp(26px,4vw,44px)] sm:text-[clamp(28px,4vw,48px)] font-bold text-[#F2F5FA]"
             style={{ fontFamily: 'Space Grotesk, sans-serif' }}
           >
             Featured work
           </h2>
-          <button className="hidden sm:flex items-center gap-2 text-[#A6AFBF] hover:text-[#2D6BFF] transition-colors text-sm sm:text-base">
-            View all
-            <ArrowRight size={14} className="sm:size-16" />
-          </button>
         </div>
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-[1600px] mx-auto">
-          {/* Left Card */}
-          <div
-            ref={leftCardRef}
-            className="group relative rounded-xl overflow-hidden card-shadow bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 transition-all duration-500"
-          >
-            <div className="relative h-[40%] sm:h-[45%] lg:h-[55%] overflow-hidden">
+          {/* Card 1 */}
+          <div className="animate-on-scroll group relative rounded-xl overflow-hidden card-shadow bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 transition-all duration-500 opacity-0 transition-opacity duration-700 delay-100">
+            <div className="relative h-[200px] sm:h-[240px] lg:h-[280px] overflow-hidden">
               <img
                 src={projects[0].image}
                 alt={projects[0].title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E111A] to-transparent" />
             </div>
             <div className="p-4 sm:p-6 lg:p-8">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-[#F2F5FA] mb-3">
+              <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-[#F2F5FA] mb-2 sm:mb-3">
                 {projects[0].title}
               </h3>
-              <p className="text-[#A6AFBF] text-xs sm:text-sm lg:text-base mb-3 sm:mb-4 line-clamp-2">
+              <p className="text-[#A6AFBF] text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
                 {projects[0].description}
               </p>
               <div className="flex flex-wrap gap-2 mb-4">
@@ -143,24 +93,22 @@ const FeaturedWorkSection = ({ className = '' }: FeaturedWorkSectionProps) => {
             </div>
           </div>
 
-          {/* Right Card */}
-          <div
-            ref={rightCardRef}
-            className="group relative rounded-xl overflow-hidden card-shadow bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 transition-all duration-500"
-          >
-            <div className="relative h-[40%] sm:h-[45%] lg:h-[55%] overflow-hidden">
+          {/* Card 2 */}
+          <div className="animate-on-scroll group relative rounded-xl overflow-hidden card-shadow bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 transition-all duration-500 opacity-0 transition-opacity duration-700 delay-200">
+            <div className="relative h-[200px] sm:h-[240px] lg:h-[280px] overflow-hidden">
               <img
                 src={projects[1].image}
                 alt={projects[1].title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E111A] to-transparent" />
             </div>
             <div className="p-4 sm:p-6 lg:p-8">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-[#F2F5FA] mb-3">
+              <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-[#F2F5FA] mb-2 sm:mb-3">
                 {projects[1].title}
               </h3>
-              <p className="text-[#A6AFBF] text-xs sm:text-sm lg:text-base mb-3 sm:mb-4 line-clamp-2">
+              <p className="text-[#A6AFBF] text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
                 {projects[1].description}
               </p>
               <div className="flex flex-wrap gap-2 mb-4">

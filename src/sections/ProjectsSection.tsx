@@ -1,60 +1,28 @@
 import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ExternalLink } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+// No GSAP/ScrollTrigger - better mobile performance
 
-interface ProjectsSectionProps {
-  className?: string;
-}
-
-const ProjectsSection = ({ className = '' }: ProjectsSectionProps) => {
+const ProjectsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Header fade in
-      gsap.fromTo(headerRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
+    // Simple intersection observer for fade-in on scroll (mobile-friendly)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
           }
-        }
-      );
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      // Cards stagger in
-      const cards = cardsRef.current?.querySelectorAll('.project-card');
-      if (cards) {
-        gsap.fromTo(cards,
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: cardsRef.current,
-              start: 'top 75%',
-              toggleActions: 'play none none reverse'
-            }
-          }
-        );
-      }
+    const animateElements = sectionRef.current?.querySelectorAll('.animate-on-scroll');
+    animateElements?.forEach((el) => observer.observe(el as Element));
 
-    }, sectionRef);
-
-    return () => ctx.revert();
+    return () => observer.disconnect();
   }, []);
 
   const projects = [
@@ -88,53 +56,52 @@ const ProjectsSection = ({ className = '' }: ProjectsSectionProps) => {
     <section
       ref={sectionRef}
       id="projects"
-      className={`section-pinned bg-[#07080B] py-20 lg:py-32 ${className}`}
+      className="bg-[#07080B] py-16 sm:py-20 lg:py-32"
     >
       <div className="relative w-full px-4 sm:px-6 lg:px-[6vw] max-w-[1400px] mx-auto">
         {/* Header */}
-        <div ref={headerRef} className="mb-12 sm:mb-16">
+        <div className="animate-on-scroll mb-8 sm:mb-12 opacity-0 transition-opacity duration-700">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
             <h2
-              className="text-[clamp(28px,5vw,48px)] sm:text-[clamp(32px,4vw,56px)] font-bold text-[#F2F5FA]"
+              className="text-[clamp(26px,4vw,44px)] sm:text-[clamp(28px,4vw,48px)] font-bold text-[#F2F5FA]"
               style={{ fontFamily: 'Space Grotesk, sans-serif' }}
             >
               Selected projects
             </h2>
-            <p className="text-[#A6AFBF] text-sm sm:text-base max-w-md">
+            <p className="text-[#A6AFBF] text-sm max-w-md">
               A few end-to-end builds— from AI pipelines to embedded control interfaces.
             </p>
           </div>
         </div>
 
         {/* Projects Grid */}
-        <div
-          ref={cardsRef}
-          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8"
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {projects.map((project, index) => (
             <div
               key={index}
-              className="project-card group"
+              className="animate-on-scroll group opacity-0 transition-opacity duration-700"
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="relative w-full h-full rounded-xl overflow-hidden bg-[#0E111A] border border-white/5 hover:border-[#2D6BFF]/30 transition-all duration-500">
                 {/* Image */}
-                <div className="relative h-[250px] sm:h-[300px] overflow-hidden">
+                <div className="relative h-[200px] sm:h-[240px] overflow-hidden">
                   <img
                     src={project.image}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0E111A] to-transparent" />
                 </div>
 
                 {/* Content */}
-                <div className="p-5 sm:p-6">
+                <div className="p-4 sm:p-5">
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+                  <div className="flex flex-wrap gap-2 mb-3">
                     {project.tags.map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className="px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-[#2D6BFF]/10 text-[#2D6BFF]"
+                        className="px-2 py-1 rounded-full bg-[#2D6BFF]/10 text-[#2D6BFF] text-[10px] sm:text-xs font-medium"
                       >
                         {tag}
                       </span>
@@ -142,12 +109,12 @@ const ProjectsSection = ({ className = '' }: ProjectsSectionProps) => {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg sm:text-xl font-bold text-[#F2F5FA] mb-2 sm:mb-3">
+                  <h3 className="text-base sm:text-lg font-bold text-[#F2F5FA] mb-2">
                     {project.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-[#A6AFBF] text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed line-clamp-3">
+                  <p className="text-[#A6AFBF] text-xs sm:text-sm mb-3 leading-relaxed line-clamp-2">
                     {project.description}
                   </p>
 

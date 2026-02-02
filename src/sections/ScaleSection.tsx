@@ -1,70 +1,28 @@
 import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Users, Calendar, Shield } from 'lucide-react';
-import { AIBackground } from '../components/effects/AIBackground';
 
-gsap.registerPlugin(ScrollTrigger);
+// No GSAP/ScrollTrigger - better mobile performance
 
 const ScaleSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const bodyRef = useRef<HTMLParagraphElement>(null);
-  const metricsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Simple scroll-triggered entrance (NO PIN - smooth scroll)
-      gsap.fromTo(headlineRef.current,
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
+    // Simple intersection observer for fade-in on scroll (mobile-friendly)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
           }
-        }
-      );
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      gsap.fromTo(bodyRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          delay: 0.1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
+    const animateElements = sectionRef.current?.querySelectorAll('.animate-on-scroll');
+    animateElements?.forEach((el) => observer.observe(el as Element));
 
-      gsap.fromTo(metricsRef.current,
-        { x: 50, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.9,
-          delay: 0.15,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: metricsRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-
-    }, sectionRef);
-
-    return () => ctx.revert();
+    return () => observer.disconnect();
   }, []);
 
   const metrics = [
@@ -79,14 +37,17 @@ const ScaleSection = () => {
       id="scale"
       className="relative w-full min-h-screen flex items-center bg-[#07080B]"
     >
-      {/* AI Background with scale image */}
-      <AIBackground
-        imageSrc="/scale_bg.jpg"
-        enableParticles={true}
-        enableVideo={true}
-        particleColor="#00D9FF"
-        overlayOpacity={0.6}
-      />
+      {/* Static background image for better performance */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src="/scale_bg.jpg"
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+          style={{ filter: 'brightness(0.3) contrast(1.1)' }}
+        />
+      </div>
+      <div className="absolute inset-0 bg-[#07080B]/70" />
 
       {/* Content */}
       <div className="relative z-10 w-full flex items-center px-4 sm:px-6 lg:px-[6vw] py-20">
@@ -95,15 +56,13 @@ const ScaleSection = () => {
             {/* Left: Text */}
             <div className="space-y-4 sm:space-y-6">
               <h2
-                ref={headlineRef}
-                className="text-[clamp(32px,5vw,64px)] sm:text-[clamp(40px,5vw,76px)] font-bold text-[#F2F5FA]"
+                className="animate-on-scroll text-[clamp(28px,4vw,52px)] sm:text-[clamp(32px,4vw,64px)] font-bold text-[#F2F5FA] opacity-0 transition-opacity duration-700"
                 style={{ fontFamily: 'Space Grotesk, sans-serif' }}
               >
                 Built for scale
               </h2>
               <p
-                ref={bodyRef}
-                className="text-base sm:text-lg lg:text-xl text-[#A6AFBF] max-w-xl leading-relaxed"
+                className="animate-on-scroll text-sm sm:text-base lg:text-lg text-[#A6AFBF] max-w-xl leading-relaxed opacity-0 transition-opacity duration-700 delay-100"
               >
                 Lead AI at DoodleLabs, building defense-grade mesh networking solutions. Shipped systems for
                 DoD contracts, public safety, and tactical communications—handling RF-contested environments, MCPTT 3GPP standards,
@@ -113,8 +72,7 @@ const ScaleSection = () => {
 
             {/* Right: Metrics Card */}
             <div
-              ref={metricsRef}
-              className="glass-card p-5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 backdrop-blur-xl bg-[#0E111A]/80 border border-white/10 rounded-2xl"
+              className="animate-on-scroll glass-card p-5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 backdrop-blur-xl bg-[#0E111A]/80 border border-white/10 rounded-2xl opacity-0 transition-opacity duration-700 delay-200"
             >
               {metrics.map((metric, index) => (
                 <div key={index} className="flex items-start gap-3 sm:gap-4 group">

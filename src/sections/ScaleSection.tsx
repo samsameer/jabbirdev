@@ -6,11 +6,7 @@ import { AIBackground } from '../components/effects/AIBackground';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface ScaleSectionProps {
-  className?: string;
-}
-
-const ScaleSection = ({ className = '' }: ScaleSectionProps) => {
+const ScaleSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const bodyRef = useRef<HTMLParagraphElement>(null);

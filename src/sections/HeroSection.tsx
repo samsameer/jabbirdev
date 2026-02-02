@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ArrowRight, Radar, Radio, Satellite } from 'lucide-react';
+import { ArrowRight, Radar, Satellite } from 'lucide-react';
 import { DashboardOverlay } from '../components/effects/DashboardOverlay';
 
 interface HeroSectionProps {
@@ -134,18 +134,6 @@ const HeroSection = ({ className = '' }: HeroSectionProps) => {
 
       {/* Gradient overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#07080B]/95 via-[#07080B]/70 to-[#07080B]/90 z-[1]" />
-
-      {/* Tactical status indicators - top left */}
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-8 z-20 hidden sm:flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0E111A]/80 border border-[#2D6BFF]/30 backdrop-blur-sm">
-          <div className="w-2 h-2 rounded-full bg-[#00FF88] animate-pulse" />
-          <span className="text-[10px] sm:text-xs text-[#00FF88] font-mono font-semibold">SYSTEMS ONLINE</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0E111A]/80 border border-white/10 backdrop-blur-sm">
-          <Radio size={12} className="text-[#2D6BFF]" />
-          <span className="text-[10px] sm:text-xs text-[#A6AFBF] font-mono">MESH ACTIVE</span>
-        </div>
-      </div>
 
       {/* Tactical HUD elements - desktop only */}
       <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-20 hidden sm:block">
